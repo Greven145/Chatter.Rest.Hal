@@ -1,59 +1,27 @@
-﻿using FluentAssertions;
+﻿using Chatter.Rest.Hal.CodeGenerators.Tests.Persons;
+using FluentAssertions;
 using Xunit;
 
 namespace Chatter.Rest.Hal.CodeGenerators.Tests;
 
 public class HalResponseGeneratorTests
 {
-	[Fact]
-	public void GeneratorAddsLinksForFileScopedNamespaces()
-	{
-		var person = new PersonWithFileNamespace
+	public static IEnumerable<object[]> Data =>
+		new List<object[]>
 		{
-			Name = "John Doe",
-			Age = 42,
-			Friends = new[] { "Tom", "Harry" }
+			new object[] { typeof(PersonWithFileNamespace) },
+			new object[] { typeof(PersonWithScopedNamespace) },
+			new object[] { typeof(PersonWithLinks) },
+			new object[] { typeof(PersonWithEmbed) },
+			new object[] { typeof(PersonWithLinksAndEmbed) },
 		};
-		person.Links.Should().BeNull();
-		person.Embedded.Should().BeNull();
-	}
 
-	[Fact]
-	public void GeneratorAddsLinksForScopedNameSpaces()
+	[Theory]
+	[MemberData(nameof(Data))]
+	public void GeneratorAddsLinksForFileScopedNamespaces(Type personType)
 	{
-		var person = new PersonWithScopedNamespace
-		{
-			Name = "John Doe",
-			Age = 42,
-			Friends = new[] { "Tom", "Harry" }
-		};
-		person.Links.Should().BeNull();
-		person.Embedded.Should().BeNull();
-	}
-
-	[Fact]
-	public void GeneratorDoesNotAddLinksIfItIsAlreadyDefined()
-	{
-		var person = new PersonWithLinks
-		{
-			Name = "John Doe",
-			Age = 42,
-			Friends = new[] { "Tom", "Harry" }
-		};
-		person.Links.Should().BeNull();
-		person.Embedded.Should().BeNull();
-	}
-
-	[Fact]
-	public void GeneratorDoesNotAddEmbedIfItIsAlreadyDefined()
-	{
-		var person = new PersonWithEmbed
-		{
-			Name = "John Doe",
-			Age = 42,
-			Friends = new[] { "Tom", "Harry" }
-		};
-		person.Links.Should().BeNull();
-		person.Embedded.Should().BeNull();
+		dynamic person = Activator.CreateInstance(personType)!;
+		var nullLinks = person.Links;
+		var nullEmbedded = person.Embedded;
 	}
 }
