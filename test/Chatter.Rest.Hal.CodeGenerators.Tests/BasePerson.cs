@@ -1,7 +1,6 @@
 ﻿namespace Chatter.Rest.Hal.CodeGenerators.Tests;
 
-[HalResponse]
-public partial class Person
+public class BasePerson
 {
 	public int Age { get; set; } = default!;
 	public string[] Friends { get; set; } = default!;
